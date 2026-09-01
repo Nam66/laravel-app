@@ -1,0 +1,44 @@
+services:
+  laravel:
+    build: .
+    container_name: laravel_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=laravel
+      - DB_USERNAME=root
+      - DB_PASSWORD=secret
+    depends_on:
+      - mysql
+    networks:
+      - shared-network
+    command: php -S 0.0.0.0:8000 -t public
+
+  mysql:
+    image: mysql:8.0
+    container_name: laravel_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - shared-network
+
+volumes:
+  mysql_data:
+
+networks:
+  shared-network:
+    external: true
+    name: shared-app-network
