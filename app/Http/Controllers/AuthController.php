@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserRegistered;
 use App\Models\User;
 use App\Models\UserRefreshToken;
 use Illuminate\Http\Request;
@@ -68,6 +69,8 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        event(new UserRegistered($user));
 
         $refreshToken = (string) Str::random(64);
         $token = Auth::guard('api')->login($user);
